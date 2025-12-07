@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kamus Universitas Sanata Dharma - Responsif</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        // Menggunakan Segoe UI, dengan fallback Inter dan sans-serif
+                        sans: ['Segoe UI', 'Inter', 'sans-serif'], 
+                    },
+                    colors: {
+                        // Skema Warna Maroon & Rose
+                        'maroon-deep': '#800000',      // Maroon/Burgundy (Aksen Utama)
+                        'rose-soft': '#F4C7C7',        // Soft Rose (Awal Gradien)
+                        'pink-light': '#FFEBEB',       // Very Light Pink (Akhir Gradien)
+                        'bg-main': '#E8E8E8',          // Abu-abu Dingin Sangat Muda
+                        'maroon-accent-light': '#B03A3A', // Maroon Lebih Terang (Aksen Sekunder)
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Mengatur font Segoe UI (atau fallback) sebagai default dan Latar Belakang Utama */
+        body {
+            font-family: 'Segoe UI', 'Inter', sans-serif; /* Menggunakan Segoe UI */
+            background-color: #E8E8E8; 
+            min-height: 100vh;
+        }
+        /* Efek hover pada tombol pil Istilah Terkait */
+        .pill-button:hover {
+            box-shadow: 0 4px 15px rgba(176, 58, 58, 0.3); /* Bayangan lembut warna maroon */
+            transform: translateY(-1px);
+        }
+        /* Ikon Kaca Pembesar (SVG minimalis) */
+        .search-icon {
+            fill: #B03A3A; /* Maroon Lebih Terang */
+        }
+        /* Style untuk menyesuaikan tampilan judul yang lebih baik */
+        .title-spacing {
+            line-height: 1.1; /* Mengurangi jarak antar baris judul */
+        }
+        .subtitle-spacing {
+            margin-top: 1.5rem; /* Menambahkan jarak yang lebih besar dari judul */
+        }
+        /* Style kustom untuk placeholder miring dan kecil */
+        #searchInput::placeholder {
+            font-style: italic;
+            font-size: 0.9rem; /* Mengatur ukuran font placeholder menjadi lebih kecil */
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+
+        <header class="mb-10 p-8 rounded-2xl shadow-xl bg-gradient-to-r from-rose-soft to-pink-light text-center">
+            <h1 class="text-4xl lg:text-5xl font-extrabold text-maroon-deep tracking-tight title-spacing">
+                Kamus <br> Universitas Sanata Dharma
+            </h1>
+            <p class="text-base italic text-gray-600 font-medium subtitle-spacing">
+                Temukan istilah di Universitas Sanata Dharma.
+            </p>
+        </header>
+
+        <div class="mb-12">
+            <div class="relative w-full max-w-3xl mx-auto">
+                <input type="text" id="searchInput" placeholder="Masukkan istilah yang ingin dicari…"
+                       class="w-full py-4 pl-12 pr-6 border border-gray-200 rounded-full bg-white text-lg focus:outline-none focus:ring-4 focus:ring-rose-soft/70 focus:border-maroon-accent-light shadow-md transition duration-300
+                       placeholder:italic placeholder:text-sm placeholder:text-gray-500"
+                       onkeyup="handleSearch()">
+                <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+                    <svg class="search-icon w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div id="resultsArea" class="space-y-6">
+            <div id="welcomeMessage" class="text-center p-10">
+                <svg class="w-16 h-16 mx-auto mb-4 text-maroon-deep" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    <line x1="10" y1="6" x2="16" y2="6"></line>
+                    <line x1="10" y1="10" x2="16" y2="10"></line>
+                </svg>
+                <p class="text-xl text-gray-500 font-semibold">
+                    Selamat datang! Ketik istilah untuk menemukan definisinya.
+                </p>
+            </div>
+        </div>
+
+        <footer class="mt-12 pt-6 border-t border-gray-300 text-center text-sm text-gray-500">
+            &copy; 2025 Mata Kuliah Penyusunan Kamus. Universitas Sanata Dharma
+        </footer>
+    </div>
+
+    <script>
+        // Data Istilah Sanata Dharma
+        const dictionaryData = [
+            {
+                term: "Ad Maiorem Dei Gloriam",
+                definition: "Motto dari Serikat Yesus dan telah digunakan sebagai seruan umat Katolik sepanjang sejarah, diinspirasi oleh Santo Ignatius Loyola, pendiri Tarekat Ordo Serikat Yesus dalam Agama Katolik yang berarti setiap sikap, keputusan, dan perbuatan yang dilakukan hendaknya selaras dengan nilai-nilai luhur mulia. Nilai-nilai tersebut ada di dalam hakekat Allah yang menciptakan dan memelihara perkembangan manusia.",
+                related: ["Jesuit"] 
+            },
+            {
+                term: "Akuntansi",
+                definition: "Program studi yang mempelajari segala hal terkait keuangan, termasuk dasar-dasar membuat laporan keuangan, mempelajari perpajakan, audit, dan pelaporan keuangan. Gelar yang diperoleh dari lulusan program studi ini adalah Sarjana Akuntansi (S.Ak.). Prodi Akuntansi USD terletak di Kampus I.",
+                related: ["Ekonomi", "Kampus I"]
+            },
+            {
+                term: "APL",
+                definition: "Kependekan dari Asisten Pembimbing Lapangan. APL merupakan individu yang bertanggung jawab membantu dosen dalam pelaksanaan praktikum di laboratorium.",
+                related: ["DPL", "Tendik"]
+            },
+            {
+                term: "Apotek Sanata Dharma",
+                definition: "Apotek Sanata Dharma, bernama Apotek Realino, merupakan bagian dari Universitas Sanata Dharma di Yogyakarta dan dikelola bersama Yayasan Realino. Apotek ini berfungsi sebagai fasilitas pendidikan untuk mahasiswa Farmasi dan Profesi Apoteker di universitas tersebut. Selain memberikan pelayanan kesehatan kepada masyarakat sekitar, apotek ini juga menjadi tempat praktek kerja mahasiswa dan sarana pembelajaran kontekstual. Apotek ini juga memiliki poliklinik yang memberikan pelayanan dan pengobatan gratis bagi mahasiswa aktif Sanata Dharma. Apotek ini berlokasi di Kampus III Paingan, tepatnya di sebelah ATM Mandiri dan ruang himpunan mahasiswa.",
+                related: ["Kampus III", "Farmasi", "Poliklinik"]
+            },
+            {
+                term: "APTIK",
+                definition: "Kepanjangan dari Asosiasi Perguruan Tinggi Katolik. APTIK merupakan lembaga yang menghimpun perguruan tinggi Katolik di Indonesia. Lembaga ini bertujuan untuk mengembangkan perguruan tinggi melalui kolaborasi di bidang akademik, sumber daya manusia, dan kegiatan sosial.",
+                related: []
+            },
+            {
+                term: "Auditorium Driyarkara",
+                definition: "Ruang besar yang digunakan untuk mengadakan pertemuan, acara-acara penting universitas, seperti seminar, konferensi, pertunjukan seni, dan acara seremonial lainnya. Auditorium ini menyediakan ruang yang luas dan fasilitas audio-visual untuk mendukung berbagai kegiatan. Auditorium Driyarkara berada di Kampus II yang terletak di sebelah barat Gedung BAA.",
+                related: ["Kampus II", "BAA", "Ruang Seminar Driyarkara"]
+            },
+            {
+                term: "Asdos",
+                definition: "Kependekan dari Asisten Dosen. Asdos merupakan mahasiswa yang membantu dosen dalam pelaksanaan kegiatan akademik.",
+                related: []
+            },
+            {
+                term: "BAA",
+                definition: "Kependekan dari Biro Administrasi Akademik. BAA merupakan unit yang mengelola administrasi akademik mahasiswa seperti KRS, KHS, transkrip nilai, dan ijazah. BAA berlokasi di Kampus I Mrican.",
+                related: []
+            },
+            {
+                term: "BAPSI",
+                definition: "Kependekan dari Biro Administrasi Perencanaan dan Sistem Informasi. BAPSI mempunyai tugas melaksanakan pengembangan sistem informasi serta pelayanan data informasi. Dengan alamat website https://web.usd.ac.id/biro/bapsi/.",
+                related: []
+            },
+            {
+                term: "BAU",
+                definition: "Kependekan dari Biro Administrasi Umum. BAU merupakan unit yang bertanggung jawab atas pengelolaan sarana, prasarana, serta kebutuhan operasional universitas.",
+                related: []
+            },
+            {
+                term: "BELAJAR USD",
+                definition: "Media pembelajaran daring melalui situs e-learning Universitas Sanata Dharma yang dapat diakses melalui browser atau aplikasi seluler menggunakan akun pengguna, dan memanfaatkan teknologi informasi untuk mendukung proses belajar mengajar secara terstruktur, interaktif, dan terintegrasi dalam lingkungan digital USD.",
+                related: []
+            },
+            {
+                term: "BK",
+                definition: "Kependekan dari Bimbingan dan Konseling. Prodi ini mempelajari mengenai ilmu tentang manusia, perilaku, dan pengembangan diri. Lulusan Pendidikan Bimbingan dan Konseling akan mendapatkan gelar Sarjana Pendidikan (S.Pd.). Prodi BK terletak di Kampus I.",
+                related: []
+            },
+            {
+                term: "BKHI",
+                definition: "Kependekan dari Biro Kerjasama dan Hubungan Internasional, BKHI merupakan unit yang bertugas mengelola dan mengembangkan program-program internasional yang ditujukan untuk memperluas wawasan global mahasiswa. BKHI menyelenggarakan kegiatan sosialisasi, pertukaran mahasiswa, program kepemimpinan, pembelajaran layanan, serta berbagai skema mobilitas akademik dan budaya bekerja sama dengan mitra internasional. Unit ini berperan menyediakan informasi, pendampingan, dan fasilitas bagi mahasiswa untuk berpartisipasi dalam program internasional, sekaligus memperkuat jejaring kerja sama USD dengan institusi pendidikan di berbagai negara. BKHI ini berlokasi di Gedung Pusat, Kampus II.",
+                related: []
+            },
+            {
+                term: "Bookscafe",
+                definition: "Kedai yang terletak di bagian barat lantai 1 di dalam Perpustakaan Mrican. Books Cafe merupakan tempat yang menggabungkan suasana kafe dengan fasilitas membaca, menyediakan ruang bagi mahasiswa untuk belajar sambil menikmati minuman dan makanan ringan.",
+                related: ["Perpus USD"]
+            },
+            {
+                term: "BPM",
+                definition: "Kependekan dari Badan Penjaminan Mutu. BPM merupakan lembaga yang memastikan kualitas akademik dan non-akademik di lingkungan universitas berjalan sesuai standar mutu.",
+                related: []
+            },
+            {
+                term: "BPRM",
+                definition: "Kependekan dari Biro Promosi dan Relasi Masyarakat. BPRM merupakan unit yang menangani kegiatan promosi universitas dan hubungan dengan masyarakat luas.",
+                related: []
+            },
+            {
+                term: "BRS",
+                definition: "Kependekan dari Bimbingan Rencana Studi. BRS adalah kegiatan bimbingan yang memuat daftar rencana mata kuliah yang akan diambil serta beban sks yang diisi oleh mahasiswa setiap semester setelah mahasiswa melakukan pendaftaran ulang. BRS dilakukan pada waktu sekitar dua minggu sebelum Semester dimulai.",
+                related: []
+            },
+            {
+                term: "BSS",
+                definition: "Kependekan dari Berhenti Studi Sementara. BSS adalah penundaan registrasi dan perkuliahan dalam semester tertentu, yang diizinkan secara sah bagi mahasiswa.",
+                related: []
+            },
+            {
+                term: "Cerdas Humanis",
+                definition: "Slogan yang digunakan untuk menggambarkan individu yang tidak hanya memiliki kecerdasan intelektual, tetapi juga memiliki kepedulian terhadap nilai-nilai kemanusiaan dan etika dalam setiap tindakan dan keputusan.",
+                related: []
+            },
+            {
+                term: "Campus Store USD",
+                definition: "Toko yang berada di lantai satu Perpustakaan Mrican sebelah barat. Campus Store menjual berbagai jenis souvenir dan buku yang diterbitkan langsung oleh Pusat Penerbitan Buku USD.",
+                related: []
+            },
+            {
+                term: "Campus Ministry (CM)",
+                definition: "Unit pelayanan pastoral dan pengembangan kerohanian kampus yang menjadi bagian dari identitas Universitas Jesuit. CM mendukung pembinaan spiritualitas berbasis nilai-nilai Ignatian dan tradisi Gereja Katolik melalui pengembangan kehidupan doa, refleksi, solidaritas, serta pemberdayaan komunitas dengan semangat menghargai keberagaman dan kepedulian sosial. Selain itu, CM menyelenggarakan berbagai kegiatan seperti misa komunitas, dialog lintas agama, dan program formasi spiritualitas bagi civitas akademika Universitas Sanata Dharma (USD). CM juga berperan dalam menjaga integritas kampus sebagai ruang dialog iman dan spiritualitas, sejalan dengan visi USD sebagai universitas berlandaskan nilai-nilai Jesuit dan humanis. Akun instagram resmi Campus Ministry adalah @campusministryusd.",
+                related: ["Jesuit"]
+            },
+            {
+                term: "Doktor Kajian Budaya",
+                definition: "Program pendidikan lanjutan yang ditujukan bagi lulusan program pascasarjana (S-2) yang mempelajari berbagai aspek kebudayaan dalam konteks sosial, politik, ekonomi, dan sejarah. Program ini menggunakan pendekatan interdisipliner untuk mengkaji masalah-masalah kebudayaan, menekankan analisis kritis terhadap budaya populer, tradisi, identitas, serta dinamika kekuasaan yang mempengaruhi representasi dan praktik budaya di masyarakat. Gelar yang diberikan adalah Doktor (Dr.). Prodi ini terletak di Gedung Pusat Pascasarjana Kampus II.",
+                related: []
+            },
+            {
+                term: "Driyarkara Muda",
+                definition: "Slogan yang digunakan untuk menggambarkan generasi muda yang terinspirasi oleh pemikiran dan nilai-nilai yang diajarkan oleh Driyarkara, seorang filsuf Indonesia yang menekankan pentingnya kemanusiaan dan pendidikan.",
+                related: []
+            },
+            {
+                term: "Domus Pacis Santo Petrus",
+                definition: "Tempat yang berfungsi sebagai rumah retret atau tempat tinggal sementara bagi mahasiswa atau tamu yang membutuhkan suasana tenang untuk refleksi dan doa. Tempat ini berlokasi di Kentungan, Jl. Kaliurang KM. 7, Kayen, Condongcatur, Depok, Sleman, Yogyakarta 55281.",
+                related: []
+            },
+            {
+                term: "Dospem",
+                definition: "Kependekan dari Dosen Pembimbing. Dospem adalah dosen yang ditugaskan untuk membantu dan membimbing mahasiswa dalam menyelesaikan tanggung jawab dalam hal menyusun skripsi.",
+                related: ["Skripsi", "Tendik"]
+            },
+            {
+                term: "DPA",
+                definition: "Kependekan dari Dosen Pembimbing Akademik. DPA adalah dosen yang ditugaskan untuk membantu dan membimbing persoalan akademik yang dihadapi mahasiswa.",
+                related: []
+            },
+            {
+                term: "DPL",
+                definition: "Kependekan dari Dosen Pembimbing Lapangan. DPL merupakan dosen yang bertugas membimbing dan mengawasi mahasiswa selama menjalani kegiatan lapangan.",
+                related: ["APL", "Tendik"]
+            },
+            {
+                term: "DPP",
+                definition: "Kependekan dari Dana Pengembangan Pendidikan. DPP adalah biaya yang harus dibayarkan oleh mahasiswa pada tahun pertama saat mereka masuk ke institusi pendidikan tinggi yang besarnya bisa bervariasi tergantung kebijakan masing-masing universitas atau fakultas, dan biasanya dibedakan berdasarkan program studi yang diambil.",
+                related: ["USKS"]
+            },
+            {
+                term: "E-learning belajar/LMS USD",
+                definition: "Media belajar yang digunakan untuk proses belajar mengajar dengan metode dalam jaringan. Dengan alamat website https://belajar.usd.ac.id",
+                related: ["BELAJAR USD"]
+            },
+            {
+                term: "Ekonomi",
+                definition: "Program studi yang mempelajari tentang perencanaan bisnis dan perencanaan keuangan, manajemen risiko, analisis data, pemodelan, serta kebijakan ekonomi. Gelar yang diperoleh dari lulusan program studi ini adalah Sarjana Ekonomi (S.E.). Prodi Ekonomi USD terletak di Kampus I.",
+                related: ["Manajemen", "Akuntansi", "Kampus I"]
+            },
+            {
+                term: "Elite",
+                definition: "Acara yang diselenggarakan oleh jurusan Sastra Inggris. Berfokus pada pengembangan kepemimpinan dan keterampilan mahasiswa serta tempat untuk mengakrabkan satu sama lain. Akun instagram resmi Elite adalah @eliteusd.",
+                related: ["Sastra Inggris"]
+            },
+            {
+                term: "Elthemusical",
+                definition: "Pertunjukan musikal yang melibatkan mahasiswa prodi Sastra Inggris dalam produksi teater berbahasa inggris, menampilkan bakat seni dan kreativitas mahasiswa Sastra Inggris. Akun instagram resmi Elthemusical adalah @elthemusical.usd.",
+                related: ["Sastra Inggris"]
+            },
+            {
+                term: "EXERO",
+                definition: "Nama jurnal penelitian dalam bidang bisnis dan ekonomi milik Fakultas Ekonomi Universitas Sanata Dharma. Jurnal ini terbit sejak tahun 2018 dengan frekuensi dua bulan pada Mei dan November. Jurnal ini memuat artikel penelitian tentang ekonomi, akuntansi, dan bisnis yang ditujukan bagi akademisi internasional, praktisi, regulator, dan masyarakat umum.",
+                related: ["Ekonomi", "Akuntansi"]
+            },
+            {
+                term: "Farmasi",
+                definition: "Program Studi Farmasi mempelajari tentang seluk-beluk obat-obatan, mulai dari proses pembuatan, penyimpanan, penyaluran, hingga penggunaannya. Program studi Farmasi terletak di kampus III. Gelar yang diperoleh dari lulusan program studi ini adalah Sarjana Farmasi (S.Farm.).",
+                related: ["Kampus III", "Apotek Sanata Dharma", "Pendidikan Profesi Apoteker"]
+            },
+            {
+                term: "Filsafat Keilahian",
+                definition: "Program Studi Filsafat Keilahian mempelajari ilmu teologi (dalam tradisi Kristiani) yang solid dalam dialog yang intensif dengan fondasi pemikiran filosofis, perspektif agama-agama lain, dan ilmu-ilmu sosial kritis, yang mengarah pada tindakan dan keterlibatan nyata lewat metode teologi kontekstual yang senantiasa berpijak pada realitas masyarakat kontemporer. Lulusan Prodi Filsafat Keilahian akan mendapat gelar Sarjana Filsafat (S.Fil.). Prodi ini berlokasi di Kampus IV.",
+                related: ["Kampus IV"]
+            },
+            {
+                term: "Formasi Cerdas Humanis 1",
+                definition: "Program pengembangan kepribadian integral di Universitas Sanata Dharma (USD) yang bertujuan agar mahasiswa dapat mengenal diri, bertumbuh, dan berkembang dalam aspek akademik maupun non-akademik.",
+                related: []
+            },
+            {
+                term: "Formasi Cerdas Humanis 2",
+                definition: "Program Universitas Sanata Dharma (USD) yang berfokus pada pengembangan potensi dirinya, seperti bakat, minat, dan kemampuan yang mendukung pertumbuhan pribadi yang mandiri.",
+                related: []
+            },
+            {
+                term: "Formasi Cerdas Humanis 3",
+                definition: "Program Universitas Sanata Dharma (USD) yang menanamkan nilai tanggung jawab pribadi dan sosial pada mahasiswa agar mampu mengambil peran aktif dalam kehidupan bersama, menunjukkan kepedulian terhadap sesama, dan menjunjung nilai keadilan sosial.",
+                related: []
+            },
+            {
+                term: "Formasi Cerdas Humanis 4",
+                definition: "Program Universitas Sanata Dharma (USD) yang menekankan pentingnya keterlibatan mahasiswa dalam komunitas kampus dan masyarakat, dengan semangat kolaborasi, solidaritas, dan kebersamaan untuk membangun kehidupan yang berkeadaban.",
+                related: []
+            },
+            {
+                term: "Formasi Cerdas Humanis 5",
+                definition: "Program Universitas Sanata Dharma (USD) yang mengintegrasikan dimensi intelektual, spiritual, dan kemanusiaan sehingga mahasiswa mampu hidup secara utuh, reflektif, serta berorientasi pada kebaikan bersama.",
+                related: []
+            },
+            {
+                term: "FKM Budi Utama",
+                definition: "Forum Keluarga Muslim Bina Ukhuwah Dakwah Islamiyah Universitas Sanata Dharma yang memberi wadah bagi mahasiswa muslim di Universitas Sanata Dharma untuk saling menjalin silaturahmi sekaligus media untuk belajar berorganisasi. Akun instagram resmi FKM Budi Utama saat ini adalah @fkmbudiutama.",
+                related: []
+            },
+            {
+                term: "Gedung BAA",
+                definition: "Gedung BAA adalah unsur pelaksana yang menangani segala sesuatu yang berkaitan dengan tata cara penyelenggaraan proses kegiatan belajar mengajar dan proses administrasi akademik bagi seluruh mahasiswa. Gedung BAA terletak di Kampus II, tepatnya di sebelah timur Gedung Auditorium Driyarkara.",
+                related: ["BAA", "Kampus II", "Auditorium Driyarkara"]
+            },
+            {
+                term: "Gelar Gagasan Kritis",
+                definition: "Gelar Gagasan Kritis atau Get it Share it! (GiSi) merupakan program kemahasiswaan Universitas Sanata Dharma yang terdiri dari dua kegiatan, yaitu kegiatan pelatihan berpikir kritis dan kegiatan Gelar Gagasan (presentasi gagasan hasil pelatihan berpikir kritis). Melalui kegiatan berpikir kritis serta kegiatan Gelar Gagasan, mahasiswa dilatih untuk mengolah fenomena atau masalah sosial menjadi gagasan dan tulisan yang otentik, komprehensif, dan berdampak. Program ini menyediakan ruang bagi mahasiswa untuk menyusun, mempertajam, dan mempresentasikan gagasan kritis mereka sebagai bentuk ekspresi akademik. Selain di tingkat universitas, mahasiswa juga dapat mengikuti kegiatan sejenis di tingkat fakultas/ jurusan/ program studi. Keterlibatan mahasiswa dalam kegiatan GiSi akan mendapat poin yang jumlahnya diatur dalam Pedoman Sistem Poin Kemahasiswaan (SPK) USD, sesuai peran mahasiswa dalam kegiatan ini.",
+                related: ["Poin Kemahasiswaan"]
+            },
+            {
+                term: "Gedung S-2",
+                definition: "Gedung yang digunakan untuk Program Studi Pascasarjana (S-2), menyediakan ruang kelas, ruang seminar, dan fasilitas akademik lainnya untuk mendukung kegiatan pendidikan lanjutan.",
+                related: []
+            },
+            {
+                term: "Grisadha",
+                definition: "Kependekan dari Grup Tari Sanata Dharma. Grisadha merupakan unit kegiatan mahasiswa yang bergerak di bidang budaya, khususnya seni tari. Akun Instagram resmi Grisadha adalah @grisadha. Tempat latihan Grisadha berada di Panggung Realino, Kampus II.",
+                related: ["Unit Kegiatan Mahasiswa (UKM)", "Panggung Realino"]
+            },
+            {
+                term: "HIMAKS",
+                definition: "Kependekan dari Himpunan Mahasiswa Akuntansi. HIMAKS merupakan organisasi mahasiswa Program Studi Akuntansi yang memiliki kemauan dan kemampuan berorganisasi untuk menyalurkan bakatnya serta menampung aspirasi mahasiswa akuntansi.",
+                related: ["HMJ", "Akuntansi"]
+            },
+            {
+                term: "HIMAPENSI",
+                definition: "Kependekan dari Himpunan Mahasiswa Pendidikan Ekonomi dan Pendidikan Akuntansi. HIMAPENSI merupakan sarana pengembangan kemampuan berorganisasi, penyaluran bakat, dan minat, serta wadah untuk menampung dan menyampaikan aspirasi mahasiswa Program Studi Pendidikan Ekonomi dan Pendidikan Akuntansi.",
+                related: ["HMJ", "Ekonomi", "Akuntansi"]
+            },
+            {
+                term: "HIMKAPAK",
+                definition: "Kependekan dari Himpunan Mahasiswa Kateketik. HIMKAPAK merupakan organisasi mahasiswa Program Studi Pendidikan Keagamaan Katolik yang memiliki kemauan dan kemampuan berorganisasi untuk menyalurkan bakatnya serta menampung aspirasi mahasiswa Pendidikan Keagamaan Katolik.",
+                related: ["HMJ", "Pendikat"]
+            },
+            {
+                term: "HM FORTE",
+                definition: "Kependekan dari Himpunan Mahasiswa Forum Teruna Ekonomika. HM FORTE merupakan organisasi mahasiswa Program Studi Manajemen yang berperan sebagai wadah bagi mahasiswa untuk mengembangkan kemampuan berorganisasi, menyalurkan bakat dan minat, serta menampung dan menyampaikan aspirasi mahasiswa manajemen.",
+                related: ["HMJ", "Manajemen"]
+            },
+            {
+                term: "HMJM",
+                definition: "Kependekan dari Himpunan Mahasiswa Program Studi Jurusan Manajemen. HMJM merupakan organisasi mahasiswa Program Studi Manajemen yang memiliki kemauan dan kemampuan berorganisasi untuk menyalurkan bakatnya serta menampung aspirasi mahasiswa Manajemen.",
+                related: ["HMJ", "Manajemen"]
+            },
+            {
+                term: "HMPS Matematika",
+                definition: "Kependekan dari Himpunan Mahasiswa Program Studi Matematika. HMPS Matematika merupakan organisasi mahasiswa Program Studi Matematika yang memiliki kemauan dan kemampuan berorganisasi untuk menyalurkan bakatnya serta menampung aspirasi mahasiswa Matematika.",
+                related: ["HMJ", "Pemat"]
+            },
+            {
+                term: "HMPSPBIO",
+                definition: "Kependekan dari Himpunan Mahasiswa Program Studi Pendidikan Biologi. HMPSPBIO merupakan organisasi mahasiswa Program Studi Pendidikan Biologi yang memiliki kemauan dan kemampuan berorganisasi untuk menyalurkan bakatnya serta menampung aspirasi mahasiswa Pendidikan Biologi.",
+                related: ["HMJ", "Pbio"]
+            },
+            {
+                term: "HMPSPBSI",
+                definition: "Kependekan dari Himpunan Mahasiswa Program Studi Pendidikan Bahasa dan Sastra Indonesia. HMPSPBSI merupakan organisasi mahasiswa Program Studi Pendidikan Bahasa dan Sastra Indonesia yang memiliki kemauan dan kemampuan berorganisasi untuk menyalurkan bakatnya serta menampung aspirasi mahasiswa Pendidikan Bahasa dan Sastra Indonesia.",
+                related: ["HMJ", "PBSI"]
+            },
+            {
+                term: "HMPSPFIS",
+                definition: "Kependekan dari Himpunan Mahasiswa Program Studi Pendidikan Fisika. HMPSFIS merupakan organisasi mahasiswa Program Studi Pendidikan Fisika yang memiliki kemauan dan kemampuan berorganisasi untuk menyalurkan bakatnya serta menampung aspirasi mahasiswa Pendidikan Fisika.",
+                related: ["HMJ", "Pefis"]
+            },
+            {
+                term: "HMJ",
+                definition: "Kependekan dari Himpunan Mahasiswa Jurusan. HMJ adalah organisasi mahasiswa yang berfungsi sebagai wadah kegiatan kemahasiswaan yang berkedudukan di tingkat jurusan. Misalnya, HIMAKS, HIMKA PAK, HMPS TEM, HMPSSING, HMJM, HMIF, HMTE, HM FORTE, HMM, HMPS.",
+                related: ["UKF", "UKPS"]
+            },
+            {
+                term: "HMPSSEJ",
+                definition: "Kependekan dari Himpunan Mahasiswa Program Studi Sejarah. HMPSSEJ merupakan organisasi mahasiswa Program Studi Sejarah yang memiliki kemauan dan kemampuan berorganisasi untuk menyalurkan bakatnya serta menampung aspirasi mahasiswa Sejarah.",
+                related: ["HMJ", "Sejarah", "Pendidikan Sejarah"]
+            },
+            {
+                term: "HMPSSASINDO",
+                definition: "Kependekan dari Himpunan Mahasiswa Program Studi Sastra Indonesia. HMPSSINDO merupakan organisasi mahasiswa Program Studi Sastra Indonesia yang memiliki kemauan dan kemampuan berorganisasi untuk menyalurkan bakatnya serta menampung aspirasi mahasiswa Sastra Indonesia.",
+                related: ["HMJ", "Sastra Indonesia", "SASINDO"]
+            },
+            {
+                term: "HMPSSING",
+                definition: "Kependekan Himpunan Mahasiswa Program Studi Sastra Inggris. HMPSSING merupakan organisasi mahasiswa Program Studi Sastra Inggris yang memiliki kemauan dan kemampuan berorganisasi untuk menyalurkan bakatnya serta menampung aspirasi mahasiswa Sastra Inggris.",
+                related: ["HMJ", "Sastra Inggris"]
+            },
+            {
+                term: "HMTE",
+                definition: "Kependekan Himpunan Mahasiswa Teknik Elektro. HMTE merupakan organisasi mahasiswa Program Studi Teknik Elektro yang memiliki kemauan dan kemampuan berorganisasi untuk menyalurkan bakatnya serta menampung aspirasi mahasiswa Teknik Elektro.",
+                related: ["HMJ", "Teknik Elektro"]
+            },
+            {
+                term: "Informatika",
+                definition: "Bidang studi Teknik Informatika mempelajari tentang pemrograman dan pengembangan perangkat lunak. Lulusan prodi Teknik Informatika akan mendapatkan gelar Sarjana Teknik Komputer (S.Kom.). Prodi ini terletak di kampus III.",
+                related: ["FST", "Kampus III"]
+            },
+            {
+                term: "Integrating Academic Excellence and Humanistic Values",
+                definition: "Slogan Universitas Sanata Dharma yang menyatakan komitmennya untuk mendidik kaum muda dengan memadukan keunggulan akademik dan nilai-nilai humanistik yang berakar pada nilai-nilai Kristiani yang universal serta kemanusiaan sebagaimana tercantum dalam Pancasila, guna membentuk lulusan yang berkompeten dan berintegritas tinggi.",
+                related: []
+            },
+            {
+                term: "Insadha",
+                definition: "Kependekan dari Inisiasi Sanata Dharma. Insadha adalah kegiatan yang diselenggarakan USD dalam rangka menyambut mahasiswa baru. Biasanya diadakan pada awal sampai akhir bulan Agustus karena terbagi menjadi beberapa gelombang. Akun instagram resmi Insadha adalah @insadha.",
+                related: []
+            },
+            {
+                term: "Insipro",
+                definition: "Kependekan dari Inisiasi Program Studi. Insipro adalah kegiatan inspiratif yang melibatkan mahasiswa dalam pengembangan keterampilan atau kreativitas. Biasanya diadakan pada Bulan September setelah selesainya inisiasi Fakultas.",
+                related: []
+            },
+            {
+                term: "IPK",
+                definition: "Kependekan dari Indeks Prestasi Kumulatif. IPK adalah angka yang menunjukkan prestasi akademik mahasiswa secara kumulatif selama masa perkuliahan.",
+                related: ["IPS", "SKS"]
+            },
+            {
+                term: "IPS",
+                definition: "Kependekan dari Indeks Prestasi Semester. IPS adalah angka yang menunjukkan hasil pencapaian di tiap semester dalam bentuk indeks prestasi.",
+                related: ["IPK", "SKS"]
+            },
+            {
+                term: "Jesuit",
+                definition: "Merujuk pada anggota Serikat Yesus (Society of Jesus), yaitu ordo religius Katolik yang mendirikan dan mengelola Universitas Sanata Dharma. Serikat Yesus didirikan oleh Santo Ignatius Loyola bersama enam sahabatnya.",
+                related: ["Sadhar", "Ad Maiorem Dei Gloriam", "Campus Ministry (CM)"]
+            },
+            {
+                term: "JKMK",
+                definition: "Kependekan dari Jalinan Kasih Mahasiswa Katolik, suatu wadah bagi para Mahasiswa Katolik Universitas Sanata Dharma untuk berkumpul, saling berbagi, saling bersosialisasi, mengembangkan sisi religiusitas dan kepribadian kita. Akun instagram resmi JKMK saat ini adalah @jkmk_usd.",
+                related: ["Unit Kegiatan Mahasiswa (UKM)"]
+            },
+            {
+                term: "Jurnal Penelitian USD",
+                definition: "Nama jurnal yang memuat ringkasan laporan hasil penelitian yang telah dilakukan. Jurnal ini diterbitkan oleh Lembaga Penelitian dan Pengabdian kepada Masyarakat (LPPM) Universitas Sanata Dharma. Terbit dua kali dalam setahun, yaitu pada bulan Mei dan November.",
+                related: ["LPPM"]
+            },
+            {
+                term: "Kampus I",
+                definition: "Pusat kegiatan akademik bagi mahasiswa yang terdaftar dalam Program Studi Fakultas Ilmu Pendidikan (FKIP), Fakultas Sastra, dan Fakultas Ekonomi. Kampus ini berlokasi di Mrican, Tromol Pos 29, Yogyakarta 55002.",
+                related: ["Kampus II", "UBSD", "Ekonomi", "Sastra Indonesia", "Sastra Inggris", "Pendidikan Profesi Guru"]
+            },
+            {
+                term: "Kampus II",
+                definition: "Bagian administrasi, perpustakaan, auditorium, kantin, dan pusat studi bagi mahasiswa yang terdaftar dalam Program Pascasarjana. Kampus ini berlokasi di Mrican, Tromol Pos 29, Yogyakarta 55002.",
+                related: ["Kampus I", "Perpus USD", "Auditorium Driyarkara", "BAA"]
+            },
+            {
+                term: "Kampus III",
+                definition: "Pusat kegiatan akademik bagi mahasiswa yang terdaftar dalam Program Studi Fakultas Sains dan Teknologi, Fakultas Psikologi, dan Fakultas Farmasi. Kampus ini berlokasi di Paingan, Maguwoharjo, Depok, Sleman, Yogyakarta.",
+                related: ["FST", "Farmasi", "Psikologi", "Apotek Sanata Dharma", "Program Profesi Insinyur (PPI)", "Pendidikan Profesi Apoteker"]
+            },
+            {
+                term: "Kampus IV",
+                definition: "Pusat kegiatan akademik bagi mahasiswa yang terdaftar dalam Program Studi Fakultas Teologi. Kampus ini berlokasi di Kentungan, JL. Kaliurang Km 7, Tromol Pos 1194 Yogyakarta.",
+                related: ["Filsafat Keilahian"]
+            },
+            {
+                term: "Kampus V",
+                definition: "Pusat kegiatan akademik bagi mahasiswa yang terdaftar dalam Program Studi Pendidikan Agama Katolik. Kampus ini berlokasi di Jl. Ahmad Jazuli No. 2, Yogyakarta.",
+                related: ["Pendikat"]
+            },
+            {
+                term: "Kandang T-Rex",
+                definition: "Nama unik yang diberikan oleh mahasiswa untuk suatu area di kampus yang berbentuk dan berdekorasi layaknya sebuah kandang dinosaurus (sangat besar). Kandang T-rex merupakan sebuah lokasi tanaman obat yang dimiliki oleh Program Studi Biologi dan biasanya digunakan untuk pembelajaran maupun penelitian.",
+                related: ["Pbio"]
+            },
+            {
+                term: "Kantin Realino",
+                definition: "Kantin ini menyediakan berbagai pilihan makanan dan minuman yang berada di Kampus II, tepatnya di sebelah utara Panggung Realino dan di sebelah barat Lapangan Realino. Tempat ini menjadi salah satu pilihan utama bagi mahasiswa yang mencari makan siang atau sekadar bersantai di antara jam kuliah.",
+                related: ["Kampus II", "Panggung Realino", "Lapangan Realino"]
+            },
+            {
+                term: "Kritis, Kreatif, dan Humanis",
+                definition: "Slogan fakultas sastra yang digunakan untuk menggambarkan pendekatan pendidikan yang mendorong mahasiswa untuk berpikir kritis, berinovasi secara kreatif, dan tetap menjunjung tinggi nilai-nilai kemanusiaan.",
+                related: []
+            },
+            {
+                term: "Kaprodi",
+                definition: "Kependekan dari Ketua Program Studi. Kaprodi adalah jabatan pada perguruan tinggi yang bertanggung jawab atas perkuliahan dan himpunan mahasiswa di bawah naungan program studi.",
+                related: ["Wakaprodi/Waka", "HMJ"]
+            },
+            {
+                term: "KKN",
+                definition: "Kependekan dari Kuliah Kerja Nyata. KKN adalah bentuk kegiatan pengabdian kepada masyarakat oleh mahasiswa dengan pendekatan lintas keilmuan dan sektoral pada waktu dan daerah tertentu di Indonesia.",
+                related: ["LPPM", "Pengabdian Masyarakat"] 
+            },
+            {
+                term: "KKLP",
+                definition: "Kuliah Kerja Lapangan Profesional. Merupakan mata kuliah wajib bagi mahasiswa Fakultas Sains dan Teknologi (FST) untuk mengaplikasikan ilmu yang didapat di dunia kerja, biasanya dilakukan di semester akhir.",
+                related: ["KKN", "Skripsi", "Mata Kuliah Wajib", "FST"]
+            },
+            {
+                term: "KRS",
+                definition: "Kependekan dari Kartu Rencana Studi. KRS adalah daftar mata kuliah yang akan diikuti atau diambil oleh mahasiswa dalam satu semester ke depan. Dapat diakses dengan melakukan login melalui SIA (Sistem Informasi Akademik).",
+                related: ["BRS", "SKS", "SIA Kemahasiswaan"]
+            },
+            {
+                term: "LB",
+                definition: "Kependekan dari Lembaga Bahasa yang terletak di Kampus II, sebelah utara Gedung Auditorium Driyarkara Kampus I. LB adalah unit di universitas yang menyediakan layanan pembelajaran bahasa, pelatihan, dan pengujian kemampuan bahasa bagi mahasiswa dan masyarakat umum.",
+                related: ["Kampus II", "Auditorium Driyarkara"]
+            },
+            {
+                term: "Lapangan Realino",
+                definition: "Lapangan multifungsi yang digunakan untuk berbagai kegiatan olahraga dan kegiatan luar ruangan. Kegiatan tersebut seperti sepak bola, latihan atletik. dan acara olahraga lainnya. Kemudian, lapangan itu juga digunakan untuk acara universitas, seperti kegiatan inisiasi. Lapangan ini berlokasi di sebelah timur Kampus II, berdekatan dengan Gedung Lembaga Realino atau kompleks Kampus S-2 berhadapan dengan panggung realino.",
+                related: ["Panggung Realino", "Kampus II"]
+            },
+            {
+                term: "LPJ",
+                definition: "Kependekan dari Laporan Pertanggungjawaban. LPJ adalah laporan yang menjelaskan secara rinci mengenai hasil pelaksanaan kegiatan dari awal hingga akhir, misalnya LPJ KKN.",
+                related: ["KKN"]
+            },
+            {
+                term: "LPMAI",
+                definition: "Kependekan dari Lembaga Penjaminan Mutu dan Audit Internal. LPMAI adalah lembaga yang membantu pejabat dalam melaksanakan monitoring dan evaluasi terhadap perencanaan, pelaksanaan dan hasil kegiatan akademik dan non akademik dalam rangka mengusahakan penjaminan atas mutu tridharma (pendidikan, penelitian dan pengabdian kepada masyarakat).",
+                related: ["LPPM"]
+            },
+            {
+                term: "Lorcin",
+                definition: "Kependekan dari lorong cinta yang terletak memanjang dari Lobi Kampus I ke arah utara hingga Gedung PGSD. Lorcin adalah lorong di kampus yang mungkin dikenal karena suasananya yang romantis atau cerita-cerita yang terkait dengannya. Lorcin sering dijadikan tempat pertemuan atau jalan utama menuju beberapa gedung di Kampus I.",
+                related: ["Tangcin", "PGSD", "Kampus I"]
+            },
+            {
+                term: "LPPM",
+                definition: "Kependekan dari Lembaga Penelitian dan Pengabdian kepada Masyarakat. LPPM merupakan lembaga yang mengkoordinasikan kegiatan penelitian dan pengabdian masyarakat yang dilakukan oleh dosen maupun mahasiswa.",
+                related: ["KKN", "LPMAI", "Jurnal Penelitian USD", "Pengabdian Masyarakat"]
+            },
+            {
+                term: "Lembaga Studi Realino",
+                definition: "Sebuah resident yang menjadi asrama para peneliti humaniora dalam mengembangkan calon akademisi yang intelektual di bidang penerbitan dan promosi hasil kajian terhadap isu lokal. Lokasinya berada di Kampus II Mrican, berdekatan dengan Lembaga Bahasa.",
+                related: ["Kampus II", "LB"]
+            },
+            {
+                term: "Magister Farmasi",
+                definition: "Program pendidikan pascasarjana di bidang farmasi yang berfokus pada pengembangan pengetahuan dan keterampilan dalam ilmu farmasi, mencakup pengembangan obat, farmakologi, teknologi farmasi, dan manajemen farmasi. Program ini berlangsung selama 1,5 hingga 2 tahun dan dirancang bagi lulusan Sarjana (S-1) Farmasi atau bidang terkait yang ingin memperdalam keahlian secara lebih spesifik. Lulusan program ini memperoleh gelar Magister Farmasi (M.Farm.). Program studi ini berlokasi Kampus III.",
+                related: ["Farmasi", "Kampus III"]
+            },
+            {
+                term: "Magister Filsafat Keilahian",
+                definition: "Program Magister Teologi Universitas Sanata Dharma yang mengembangkan studi lanjut teologi dengan penekanan pada konteks masyarakat Indonesia yang beragam agama dan budayanya. Program ini memberikan kesempatan untuk memadukan pemikiran etis-religius dalam terang iman Kristiani dengan realitas sosial di Indonesia. Gelar yang diberikan setelah menyelesaikan program studi Magister Filsafat Keilahian adalah Magister Filsafat (M.Fil.). Prodi ini berlokasi di Kampus IV.",
+                related: ["Filsafat Keilahian", "Kampus IV"]
+            },
+            {
+                term: "Magister Kajian Bahasa Inggris",
+                definition: "Program Magister yang menawarkan spesialisasi dalam Linguistik Inggris, Sastra Inggris, atau Pendidikan Bahasa Inggris. Program ini bertujuan menghasilkan lulusan interdisipliner yang kompeten, publik intelektual yang mampu memberdayakan masyarakat, serta publikasi ilmiah yang mengaitkan konteks lokal dengan percakapan global. Strategi pembelajaran mencakup penerapan pedagogi Ignasian, pendekatan interdisipliner, pengalaman akademik internasional, jejaring global, serta evaluasi kurikulum secara berkala. Program studi ini berlokasi di Gedung Pascasarjana, Kampus I Universitas Sanata Dharma.",
+                related: ["PBI", "Sastra Inggris", "Kampus I"]
+            },
+            {
+                term: "Magister Kajian Budaya",
+                definition: "Program Magister yang mempersiapkan mahasiswa untuk studi lanjut dalam bidang ilmu-ilmu sosial dan kemanusiaan, dengan fokus pada minat seperti menulis, komunikasi, jurnalisme, kritik seni, dan kritik religi, menggunakan pendekatan interdisipliner agar kualifikasi di bidangnya solid. Gelar yang diberikan adalah Magister Humaniora (M.Hum.). Program studi ini berlokasi di Gedung Pascasarjana, Kampus I.",
+                related: ["Kampus I"]
+            },
+            {
+                term: "Magister Manajemen (MM)",
+                definition: "Program studi di bawah Fakultas Ekonomi yang bertujuan mengembangkan pengetahuan di bidang manajemen serta mendidik mahasiswa menjadi middle manager atau pemimpin yang inovatif, kreatif, dan profesional dalam mengelola organisasi bisnis, pemerintahan, maupun sosial. Program Studi Magister Manajemen menawarkan tiga program, yaitu Professional Regular Program (PRP), School Management and Leadership (SML), dan Magister Management in International Tourism (MMIT). Lulusan program ini memperoleh gelar Magister Manajemen (M.M.). Program studi ini berlokasi di Gedung Pascasarjana, Kampus I.",
+                related: ["Manajemen", "Kampus I"]
+            },
+            {
+                term: "Magister Pendidikan Bahasa Indonesia",
+                definition: "Program pendidikan pascasarjana yang bertujuan mendidik dan mempersiapkan profesional di bidang pendidikan bahasa Indonesia, termasuk guru, dosen, peneliti, dan pengembang kurikulum. Program ini menekankan penguasaan teori pendidikan bahasa, keterampilan mengajar, serta kemampuan melakukan penelitian ilmiah dalam konteks kebahasaan dan pembelajaran bahasa Indonesia. Lulusan program ini memperoleh gelar Magister Pendidikan Bahasa Indonesia (M.Pd.). Program studi ini berlokasi di Gedung Pascasarjana, Kampus I.",
+                related: ["PBSI", "Kampus I"]
+            },
+            {
+                term: "Magister Pendidikan Bahasa Inggris (MPBI)",
+                definition: "Program pendidikan pascasarjana pada jenjang magister (S-2) yang bertujuan mengembangkan pengetahuan, keterampilan, sikap, dan kemampuan penelitian di bidang psikologi pendidikan, pengembangan profesional guru, sastra dan linguistik dalam pengajaran bahasa Inggris, manajemen pendidikan, serta penguasaan bahasa kedua. Program ini dirancang bagi pendidik dan profesional yang ingin memperdalam kompetensi akademik maupun praktis dalam pengajaran bahasa Inggris. Lulusan program ini memperoleh gelar Magister Pendidikan Bahasa Inggris (M.Pd.). Program studi ini berlokasi di Gedung Pascasarjana, Kampus I.",
+                related: ["PBI", "Kampus I"]
+            },
+            {
+                term: "Magister Pendidikan Matematika (S2 PMat)",
+                definition: "Program pendidikan pascasarjana pada jenjang magister (S-2) yang berfokus pada pengembangan pengetahuan dan keterampilan di bidang pendidikan matematika. Program ini dirancang untuk mempersiapkan lulusan yang mampu berperan sebagai pengajar, peneliti, atau ahli dalam pendidikan matematika dengan pemahaman mendalam mengenai teori belajar dan pembelajaran matematika, metodologi pengajaran, pengembangan kurikulum, penelitian pendidikan, penerapan teknologi dalam pembelajaran, evaluasi pembelajaran, matematika terapan, statistika dan analisis data untuk pendidikan, serta psikologi pendidikan matematika. Lulusan program ini memperoleh gelar Magister Pendidikan Matematika (M.Pd.). Program studi ini berlokasi di Kampus III.",
+                related: ["Pemat", "Kampus III"]
+            },
+            {
+                term: "Magister Sastra",
+                definition: "Program pascasarjana yang fokus pada studi mendalam tentang sastra dan bahasa, mencakup analisis karya sastra, teori sastra, linguistik, dan kebudayaan terkait. Program ini ditujukan bagi lulusan sarjana (S1) yang ingin memperdalam ilmu di bidang sastra Indonesia, sastra Inggris, atau sastra daerah, dan biasanya berlangsung 1,5–2 tahun. Lulusan memperoleh gelar Magister Sastra (M.S.). Program studi ini berlokasi di Gedung Pascasarjana, Kampus I.",
+                related: ["Sastra Indonesia", "Sastra Inggris", "Kampus I"]
+            },
+            {
+                term: "Manajemen",
+                definition: "Program studi yang mempelajari pengelolaan bisnis, termasuk pemasaran, sumber daya manusia, operasional, strategi, dan keuangan. Lulusan memperoleh gelar Sarjana Manajemen (S.M.). Program studi ini berlokasi di Kampus I.",
+                related: ["Ekonomi", "Kampus I"]
+            },
+            {
+                term: "Mapasadha",
+                definition: "Kependekan dari Mahasiswa Pencinta Alam Sanata Dharma. UKM termasuk ke dalam bidang olahraga dengan memberikan wadah kepada para ini mahasiswa yang berhubungan dengan kepecintaalaman. Basecamp Mapasadha terletak di Lt.2 samping kantin Realino, Gedung Pusat Kampus II. Akun Instagram resmi Mapasadha adalah @mapasadha_yogyakarta.",
+                related: []
+            },
+            {
+                term: "Natas",
+                definition: "Kependekan dari Wahana Kreativitas. Natas merupakan UKM yang bergerak di bidang jurnalistik, menyajikan informasi baik dalam lingkup internal maupun eksternal kampus. Akun Instagram resmi Natas adalah @natasmedia. UKM ini berlokasi di Gedung Student Center Lt.2 Kampus II.",
+                related: ["Unit Kegiatan Mahasiswa (UKM)", "Kampus II"]
+            },
+            {
+                term: "NIDN",
+                definition: "Kependekan dari Nomor Induk Dosen Nasional. Nomor resmi yang diberikan oleh pemerintah kepada dosen tetap di perguruan tinggi Indonesia.",
+                related: ["Dospem", "Tendik"]
+            },
+            {
+                term: "NIM",
+                definition: "Kependekan dari Nomor Induk Mahasiswa. NIM adalah sebuah nomor identitas yang diberikan kepada setiap mahasiswa oleh perguruan tinggi.",
+                related: ["KRS", "IPK"]
+            },
+            {
+                term: "Panggung Realino",
+                definition: "Sebuah panggung yang berlokasi di Kampus II tepatnya di sebelah selatan Kantin Realino dan di sebelah barat Lapangan Realino. Panggung Realino digunakan untuk pertunjukan seni, teater, atau acara budaya lainnya dan sering menjadi pusat kegiatan kreatif dan ekspresi seni mahasiswa di kampus.",
+                related: ["Kantin Realino", "Lapangan Realino", "Kampus II"]
+            },
+            {
+                term: "Pastoran Sanata Dharma",
+                definition: "Tempat tinggal bagi para pastor yang melayani berbagai komunitas di USD. Tempat ini juga merupakan pusat kegiatan pastoral dan spiritual yang terletak di Kampus I, berdekatan dengan Kapel Santo Robertus Bellarminus.",
+                related: ["Jesuit", "Campus Ministry (CM)", "Kampus I"]
+            },
+            {
+                term: "PBI",
+                definition: "Kependekan dari Pendidikan Bahasa Inggris. Nama lain yang digunakan adalah ELESP (English Learning Education Study Program). Prodi PBI mempelajari tentang kajian Bahasa Inggris, mulai dari aspek listening, reading, writing, dan speaking. Lulusan Pendidikan Bahasa Inggris akan mendapatkan gelar Sarjana Pendidikan (S.Pd.). Prodi PBI USD terletak di Kampus I.",
+                related: ["Sastra Inggris", "Kampus I", "Ruang SAC"]
+            },
+            {
+                term: "Pbio",
+                definition: "Kependekan dari Pendidikan Biologi. PBio berfokus pada pembelajaran tentang kehidupan dan makhluk hidup di bumi. Lulusan Pendidikan Biologi akan mendapatkan gelar Sarjana Pendidikan (S.Pd.). Prodi ini terletak di Kampus I.",
+                related: ["FST", "Kampus I", "Kandang T-Rex"]
+            },
+            {
+                term: "PBSI",
+                definition: "Kependekan dari Pendidikan Bahasa dan Sastra Indonesia. PBSI mempelajari bidang yang mengajarkan keterampilan berbahasa Indonesia dengan baik dan efektif, seperti keterampilan menyimak, berbicara, membaca, dan menulis. Lulusan Pendidikan Bahasa dan Sastra Indonesia akan mendapatkan gelar Sarjana Pendidikan (S.Pd.). Prodi PBSI USD terletak di Kampus I.",
+                related: ["Sastra Indonesia", "Kampus I", "Ruang Koendjono"]
+            },
+            {
+                term: "Pefis",
+                definition: "Kependekan dari Pendidikan Fisika. Pefis mempelajari tentang ilmu fisika dan penerapannya dalam konteks pendidikan dan pengajaran. Lulusan prodi ini akan mendapatkan gelar sarjana (S.Pd.). Prodi Pendidikan Fisika terletak di Kampus I.",
+                related: ["FST", "Kampus I"]
+            },
+            {
+                term: "Pemat",
+                definition: "Kependekan dari Pendidikan Matematika. Pemat merupakan jurusan yang mempelajari teori-teori dasar matematika, misalnya aljabar, geometri, statistika, kalkulus, matematika diskrit, dan lainnya. Lulusan prodi Pendidikan Matematika akan mendapatkan gelar Sarjana Pendidikan (S.Pd.). Prodi ini terletak di Kampus I.",
+                related: ["FST", "Kampus I"]
+            },
+            {
+                term: "Pendikat",
+                definition: "Kependekan dari Pendidikan Keagamaan Katolik. Program studi ini mempelajari bidang-bidang terkait teologi Katolik, pembelajaran agama Katolik, kitab suci, kateketik, pastoral, metodologi pengajaran keagamaan, praktek pastoral, etika Kristen, dan pengembangan spiritual. Lulusan prodi Pendidikan Keagamaan Katolik akan mendapatkan gelar Sarjana Pendidikan (S.Pd.). Prodi ini berlokasi di Kampus V Kota Baru.",
+                related: ["Kampus V"]
+            },
+            {
+                term: "Pendopo PGSD",
+                definition: "Ruang terbuka yang biasanya digunakan untuk kegiatan akademik, seperti latihan atau pertemuan, serta berbagai acara lainnya. Bangunan ini terletak di sebelah barat atau belakang Sekretariat PGSD, diapit oleh gedung-gedung di sekitarnya.",
+                related: ["PGSD"]
+            },
+            {
+                term: "Pendidikan Sejarah",
+                definition: "Program studi di Universitas Sanata Dharma yang (definisi terpotong, diasumsikan sebagai program studi yang fokus pada sejarah dan pengajarannya).",
+                related: ["Sejarah"]
+            },
+            {
+                term: "Perpus USD",
+                definition: "Singkatan dari Perpustakaan Universitas Sanata Dharma, fasilitas yang menyediakan koleksi buku, jurnal, dan sumber daya informasi lain untuk mendukung kegiatan akademik dan penelitian mahasiswa serta dosen. Terdapat dua perpustakaan yaitu Perpustakaan Mrican di Kampus II tepatnya di sebelah utara Gedung BAA dan Perpustakaan Paingan di Kampus III.",
+                related: ["Kampus II", "Kampus III", "BAA", "Bookscafe"]
+            },
+            {
+                term: "PGSD",
+                definition: "Kependekan dari Pendidikan Guru Sekolah Dasar. Program studi di Universitas Sanata Dharma yang membekali mahasiswa untuk menjadi pendidik dan pengajar di tingkat Sekolah Dasar. Lulusan memperoleh gelar Sarjana Pendidikan (S.Pd.). Program studi ini berlokasi di Kampus I.",
+                related: ["Kampus I", "Pendopo PGSD", "Pendidikan Profesi Guru"]
+            },
+            // PENAMBAHAN DATA BARU DIMULAI DI SINI
+            {
+                term: "Beasiswa Cerdas Humanis",
+                definition: "Beasiswa Cerdas Humanis diberikan sebagai bantuan biaya kuliah selama empat tahun kepada mahasiswa berprestasi di Universitas Sanata Dharma.",
+                related: ["Cerdas Humanis"]
+            },
+            {
+                term: "Beasiswa DPF",
+                definition: "Beasiswa Dei Providentia Foundation merupakan beasiswa yang diberikan kepada mahasiswa Universitas Sanata Dharma dalam bentuk biaya SPP dan SKS setiap semester.",
+                related: ["SPP", "SKS"]
+            },
+            {
+                term: "Beasiswa Driyarkara",
+                definition: "Beasiswa ini diberikan untuk program studi S-1 di Sekolah Tinggi Filsafat Driyarkara, termasuk bagi mahasiswa Universitas Sanata Dharma.",
+                related: ["Filsafat Keilahian"]
+            },
+            {
+                term: "Beasiswa GLP",
+                definition: "Kependekan dari Global Learning Program. Program ini merupakan beasiswa parsial tahunan yang diselenggarakan oleh Asosiasi Perguruan Tinggi Jesuit Asia Pasifik (AJCU-AP) bagi mahasiswa untuk menempuh studi lintas negara selama satu semester.",
+                related: ["Jesuit"]
+            },
+            {
+                term: "Beasiswa KBBK Mentawai",
+                definition: "Beasiswa ini diberikan kepada mahasiswa asal Kabupaten Kepulauan Mentawai yang dibuktikan dengan KTP dan Akta Kelahiran.",
+                related: []
+            },
+            {
+                term: "Beasiswa KIP Kuliah",
+                definition: "Beasiswa bantuan pendidikan dari pemerintah yang dapat digunakan di Universitas Sanata Dharma untuk menanggung biaya SPP dan biaya hidup mahasiswa penerima.",
+                related: ["SPP"]
+            },
+            {
+                term: "Beasiswa Kutai Barat",
+                definition: "Program bantuan pendidikan yang diberikan oleh Pemerintah Kabupaten Kutai Barat sebagai bentuk apresiasi atas prestasi akademik dan upaya untuk meringankan beban biaya pendidikan bagi mahasiswa asal Kutai Barat.",
+                related: []
+            },
+            {
+                term: "DPMF",
+                definition: "Kependekan dari Dewan Perwakilan Mahasiswa fakultas yang berkedudukan di tingkat fakultas. DPMF berfungsi sebagai perwakilan mahasiswa dalam menampung dan memfasilitasi aspirasi mahasiswa, serta berkoordinasi dengan Dewan Perwakilan Mahasiswa Universitas (DPMU) dalam menjalankan tugas dan wewenangnya.",
+                related: ["DPMU", "Unit Kegiatan Mahasiswa (UKM)"]
+            },
+            {
+                term: "DPMU",
+                definition: "Kependekan dari Dewan Perwakilan Mahasiswa Universitas, yaitu dewan perwakilan tinggi mahasiswa yang berkedudukan di universitas.",
+                related: ["DPMF", "Senat Mahasiswa"]
+            },
+            {
+                term: "Electro Days",
+                definition: "Ajang tahunan bagi mahasiswa Teknik Elektro Universitas Sanata Dharma. Kegiatan ini menampilkan berbagai lomba, pameran karya mahasiswa, dan seminar teknologi elektro. Electro Days menjadi wadah untuk mengembangkan kreativitas, inovasi, serta mempererat hubungan antarmahasiswa Teknik Elektro.",
+                related: ["Teknik Elektro"]
+            },
+            {
+                term: "Gedung FKIP",
+                definition: "Gedung yang digunakan oleh Fakultas Keguruan dan Ilmu Pendidikan (FKIP), menyediakan ruang kelas, laboratorium, dan fasilitas lain untuk mendukung program studi pendidikan dan pelatihan guru.",
+                related: ["Kampus I", "PGSD"]
+            },
+            {
+                term: "Gedung PGSD",
+                definition: "Gedung yang digunakan oleh Program Studi Pendidikan Guru Sekolah Dasar (PGSD), menyediakan ruang kelas dan fasilitas pendukung untuk mendukung kegiatan pendidikan calon guru sekolah dasar.",
+                related: ["PGSD", "Kampus I"]
+            },
+            {
+                term: "Ijazah S-1",
+                definition: "Dokumen resmi yang diberikan kepada seseorang setelah menyelesaikan pendidikan S-1 di Universitas Sanata Dharma. Misalnya, Ijazah D-III, Ijazah S-1, Ijazah S-2, Ijazah S-3, dan Ijazah Profesi.",
+                related: []
+            },
+            {
+                term: "Ijazah S-2",
+                definition: "Dokumen resmi yang diberikan kepada seseorang setelah menyelesaikan pendidikan S-2 di Universitas Sanata Dharma.",
+                related: []
+            },
+            {
+                term: "Ijazah S-3",
+                definition: "Dokumen resmi yang diberikan kepada seseorang setelah menyelesaikan pendidikan S-3 di Universitas Sanata Dharma.",
+                related: []
+            },
+            {
+                term: "KOPMA",
+                definition: "Kependekan dari Koperasi Mahasiswa. Kopma merupakan unit kegiatan mahasiswa yang bergerak di bidang pengelolaan berbagai kebutuhan mahasiswa seperti makanan, minuman, dan alat tulis. Akun Instagram resmi Kopma adalah @kopmausd. UKM ini berlokasi di Kampus II Gedung Student Center Lt.2 No 6 Realino USD.",
+                related: ["Unit Kegiatan Mahasiswa (UKM)", "Kampus II"]
+            },
+            {
+                term: "Korp Sukarela PMI",
+                definition: "Unit kegiatan mahasiswa kepalangmerahan yang bergerak di bidang kemanusiaan dan sosial. Akun Instagram resmi PMI USD adalah @ksr_pmi_usd. UKM ini berlokasi di Gedung Student Center Lt.2 Kampus II.",
+                related: ["Unit Kegiatan Mahasiswa (UKM)", "Kampus II"]
+            },
+            {
+                term: "KPU",
+                definition: "Kependekan dari Komisi Pemilihan Umum. KPU adalah Komisi yang bertanggung jawab atas penyelenggaraan pemilihan mahasiswa. Akun instagram resmi KPU adalah @kpuusd.",
+                related: []
+            },
+            {
+                term: "P2TKP",
+                definition: "Kependekan dari Pusat Pelayanan Tes dan Konsultasi Psikologi. P2TKP adalah layanan yang difasilitasi Fakultas Psikologi untuk mahasiswa/i yang membutuhkan konseling atau pengalaman dalam praktik di dunia psikologi. Akun instagram resmi P2TKP adalah @p2tkp.",
+                related: ["Psikologi"]
+            },
+            {
+                term: "Pekafe",
+                definition: "Kependekan dari Pekan Keakraban Fakultas Ekonomi. Pekafe adalah kegiatan inisiasi mahasiswa dan mahasiswi baru Fakultas Ekonomi Universitas Sanata Dharma yang diselenggarakan setiap tahun. Biasanya diadakan pada akhir bulan Agustus. Akun instagram resmi Pekafe adalah @pekafe_usd.",
+                related: ["Ekonomi"]
+            },
+            {
+                term: "Pengabdian Masyarakat",
+                definition: "Sebuah unit kegiatan mahasiswa yang memiliki kegiatan dengan bertujuan membantu masyarakat tertentu dalam beberapa aktivitas tanpa mengharapkan imbalan dalam bentuk apapun. Akun instagram resmi UKM Pengabdian Masyarakat saat ini adalah @ukm_pengabdian_masyarakat.",
+                related: ["Unit Kegiatan Mahasiswa (UKM)", "KKN", "LPPM"]
+            },
+            {
+                term: "Poliklinik",
+                definition: "Ruang ini berada di basement BAA, dikhususkan bagi mahasiswa dan tenaga pendidik yang sedang sakit atau memerlukan bantuan medis.",
+                related: ["BAA", "Apotek Sanata Dharma"]
+            },
+            {
+                term: "Program Profesi Insinyur (PPI)",
+                definition: "Program pendidikan tinggi yang diselenggarakan setelah program sarjana untuk membentuk dan mengembangkan kompetensi keinsinyuran sesuai dengan standar profesi. Lulusan program ini memperoleh gelar Insinyur (Ir.). Program Profesi Insinyur berlokasi di Kampus III.",
+                related: ["Kampus III", "Teknik Elektro", "Teknik Mesin"]
+            },
+            {
+                term: "Pendidikan Profesi Apoteker",
+                definition: "Bidang studi yang mempelajari berbagai bidang terkait dengan ilmu farmasi dan praktek kefarmasian, farmakologi, farmasetika, kimia farmasi, farmakokinetika, farmasi klinik, manajemen farmasi, fitokimia, etika dan hukum farmasi. Gelar yang didapatkan setelah menyelesaikan Program Studi Pendidikan Profesi Apoteker adalah Apoteker (Apt.). Prodi ini berlokasi di Kampus III.",
+                related: ["Farmasi", "Kampus III", "Apotek Sanata Dharma"]
+            },
+            {
+                term: "Pendidikan Profesi Guru",
+                definition: "Bidang studi yang mempersiapkan dan menghasilkan guru profesional untuk jenjang sekolah dasar maupun menengah. Program ini bertujuan menghasilkan pendidik yang kompeten, mampu menghasilkan karya yang berkontribusi pada pengembangan ilmu pendidikan, melaksanakan pengabdian kepada masyarakat, serta menjalin kerja sama dengan berbagai sekolah. Lulusan program ini memperoleh gelar Guru Profesional (Gr.). Program Studi Pendidikan Profesi Guru berlokasi di Kampus I.",
+                related: ["Kampus I", "PGSD"]
+            },
+            {
+                term: "PsycoFest",
+                definition: "Acara yang diselenggarakan oleh Fakultas atau Program Studi Psikologi. Acara ini berfokus pada tema-tema psikologi dengan kegiatan seperti seminar, workshop, konser, dan kompetisi. Akun instagram resmi PsychoFest adalah @psychofest_usd.",
+                related: ["Psikologi"]
+            },
+            {
+                term: "Pusat Layanan Konseling",
+                definition: "Ruang ini berada di basement BAA, dikhususkan bagi mahasiswa/i yang ingin melakukan konsultasi dan bimbingan konseling.",
+                related: ["BAA", "Psikologi"]
+            },
+            {
+                term: "Pusat Sejarah dan Etika Politik (PUSdEP)",
+                definition: "Ruang ini digunakan sebagai wadah diskusi terkait kajian sejarah dan etika politik, serta berfungsi sebagai pusat penelitian berbasis universitas.",
+                related: ["Sejarah"]
+            },
+            {
+                term: "Ruang Play",
+                definition: "Ruang yang dirancang untuk kegiatan kreatif atau rekreasi, menyediakan fasilitas untuk bermain atau bereksperimen dalam konteks pendidikan. Ruang ini terletak di Gedung Fakultas Sastra lantai 4.",
+                related: ["Sastra Indonesia", "Sastra Inggris"]
+            },
+            {
+                term: "Ruang Rapat Biro Personalia",
+                definition: "Ruang yang digunakan untuk pertemuan struktural atau administratif, di mana staf berkumpul untuk membahas kebijakan dan operasional universitas. Ruang ini terletak di Gedung Pusat, Kampus II, lantai 3 Universitas Sanata Dharma.",
+                related: ["Kampus II"]
+            },
+            {
+                term: "Ruang SAC",
+                definition: "Ruang yang menyediakan fasilitas belajar mandiri bagi mahasiswa, lengkap dengan berbagai sumber belajar seperti buku, komputer, dan materi audiovisual. Ruang ini berlokasi di Kampus I Universitas Sanata Dharma, tepat di antara UBSD dan Ruang Gieles, dan dikelola oleh Program Studi Pendidikan Bahasa Inggris.",
+                related: ["Kampus I", "UBSD", "PBI"]
+            },
+            {
+                term: "Sada Pardomuan",
+                definition: "Komunitas orang Batak di Universitas Sanata Dharma yang menjadi wadah berkumpul bagi mahasiswa Batak. Kegiatan komunitas ini meliputi olahraga, seperti futsal dan badminton, serta seni dan budaya, seperti tor-tor, bernyanyi, dan bermusik. Akun Instagram resmi komunitas ini adalah @sada_pardomuan.",
+                related: []
+            },
+            {
+                term: "Sekre",
+                definition: "Kependekan dari Sekretariat. Sekre adalah ruangan atau kantor yang digunakan oleh civitas academica untuk mengelola administrasi dan menjalankan kegiatan organisasi. Setiap fakultas dan unit memiliki sekretariat masing-masing.",
+                related: []
+            },
+            {
+                term: "Selasar Gedung Sastra",
+                definition: "Koridor atau area terbuka di setiap lantai Gedung Sastra, yang sering digunakan mahasiswa sebagai tempat belajar informal, diskusi, atau sekadar bersantai.",
+                related: ["Sastra Indonesia", "Sastra Inggris"]
+            },
+            {
+                term: "Senat Mahasiswa",
+                definition: "Organisasi mahasiswa tingkat universitas yang berfungsi sebagai lembaga perwakilan dan pengawasan terhadap kegiatan mahasiswa.",
+                related: ["DPMU", "Unit Kegiatan Mahasiswa (UKM)"]
+            },
+            {
+                term: "SLP",
+                definition: "Kependekan dari Service Learning Program. SLP merupakan program pertukaran pelajar dengan beasiswa parsial dan berbasis kredit yang diselenggarakan setiap tahun di bawah koordinasi Association of Jesuit Colleges and Universities in Asia Pacific (AJCU-AP). Mahasiswa peserta program akan mengikuti pertukaran pelajar selama dua minggu di universitas penyelenggara.",
+                related: ["Jesuit"]
+            },
+            {
+                term: "Smoking Area",
+                definition: "Area khusus di kampus yang disediakan bagi mahasiswa dan staf yang ingin merokok, agar aktivitas merokok tidak mengganggu kenyamanan dan kesehatan lingkungan kampus. Salah satu smoking area yang tersedia berada di Kantin Realino, Kampus II.",
+                related: ["Kantin Realino", "Kampus II"]
+            },
+            {
+                term: "SPMB",
+                definition: "Kependekan dari Seleksi Penerimaan Mahasiswa Baru. SPMB merupakan proses seleksi masuk bagi calon mahasiswa Universitas Sanata Dharma melalui jalur tes, prestasi, maupun rekomendasi sekolah.",
+                related: []
+            },
+            {
+                term: "SPP",
+                definition: "Kependekan dari Sumbangan Penyelenggara Pendidikan. SPP adalah biaya yang terdiri dari Uang Kuliah Tetap (UKT) yang dibayarkan setiap awal semester, dan Uang Satuan Kredit Semester (USKS) yang dibayarkan setiap akhir semester sebelum ujian.",
+                related: ["USKS"]
+            },
+            // PENAMBAHAN DATA BARU BERAKHIR DI SINI
+            {
+                term: "Poin Kemahasiswaan",
+                definition: "Sistem pencatatan dan penghargaan di Universitas Sanata Dharma untuk partisipasi mahasiswa dalam kegiatan akademik dan non-akademik, seperti organisasi, seminar, olahraga, seni, penelitian, pengabdian masyarakat, dan program pengembangan diri, sebagai indikator kontribusi dan pengembangan karakter lainnya. Semua mahasiswa wajib memperoleh minimal 50 poin sebagai syarat kelulusan.",
+                related: ["Unit Kegiatan Mahasiswa (UKM)", "Gelar Gagasan Kritis"]
+            },
+            {
+                term: "Proposal",
+                definition: "Dokumen yang berisi rencana yang dituangkan dalam bentuk rancangan kerja. Misalnya, proposal kegiatan, proposal penelitian, dan proposal skripsi.",
+                related: ["Skripsi"]
+            },
+            {
+                term: "PPKS",
+                definition: "Kependekan dari Protokol Pencegahan dan Penanganan Kekerasan Seksual. PPKS adalah panduan cara bertindak yang sesuai dengan kode etik Universitas Sanata Dharma dan sekaligus sebagai instrumen untuk melindungi Pegawai dan Mahasiswa dari kekerasan seksual.",
+                related: []
+            },
+            {
+                term: "PSIBK",
+                definition: "Kependekan dari Pusat Studi Individu Berkebutuhan Khusus. PSIBK memberikan pendampingan bagi mahasiswa disabilitas dalam kegiatan akademik maupun non-akademik.",
+                related: []
+            },
+            {
+                term: "PSM Cantus Firmus",
+                definition: "Kependekan dari Paduan Suara Mahasiswa Cantus Firmus yang bergerak dalam bidang paduan suara. Akun Instagram resmi PSM Cantus Firmus adalah @psmcf_usd.",
+                related: ["Unit Kegiatan Mahasiswa (UKM)"]
+            },
+            {
+                term: "Psikologi",
+                definition: "Ilmu yang mempelajari tentang perilaku dan proses mental manusia. Lulusan prodi Psikologi akan mendapatkan gelar Sarjana Psikologi (S.Psi.). Prodi ini terletak di kampus III.",
+                related: ["Kampus III", "Psikologi Program Magister", "P2TKP"]
+            },
+            {
+                term: "Psikologi Program Magister",
+                definition: "Program Magister Psikologi mempelajari model psikologi kritis yang menekankan pada pemahaman fenomena atau perilaku yang bersifat context-bound, negotiated, dan fluid. Lulusan prodi Psikologi Program Magister akan mendapatkan gelar Magister Psikologi (M.PSi.). Prodi ini terletak di kampus III.",
+                related: ["Psikologi", "Kampus III"]
+            },
+            {
+                term: "Rektor",
+                definition: "Pemimpin tertinggi di universitas yang bertanggung jawab atas keseluruhan manajemen, pengembangan kebijakan, dan pengambilan keputusan strategis untuk mencapai visi dan misi institusi. Rektor Universitas Sanata Dharma saat ini adalah Rama Albertus Bagus Laksana, S.J., S.S., Ph.D. untuk periode 2022–2026.",
+                related: ["Warek I/WR I", "Warek II/WR II", "Warek III/WR III", "Warek IV/ WR IV"]
+            },
+            {
+                term: "Ruang Koendjono",
+                definition: "Ruang yang dinamai untuk menghormati Pater Drs. Th. Koendjono, S.J., seorang tokoh penting dalam pendidikan Katolik di Indonesia dan pendiri Program Studi Pendidikan Bahasa Sastra Indonesia (PBSI) di Universitas Sanata Dharma. Ruang ini digunakan untuk berbagai kegiatan akademik, seperti pertemuan, seminar, dan kuliah, dan terletak di Lantai IV Gedung BAA, Kampus II USD. Penamaan ruang ini bertujuan mengenang jasa beliau dalam pengembangan pendidikan bahasa dan sastra di lingkungan Universitas Sanata Dharma.",
+                related: ["PBSI", "BAA", "Kampus II"]
+            },
+            {
+                term: "Ruang Seminar Driyarkara",
+                definition: "Ruang yang dirancang khusus untuk seminar, diskusi, dan presentasi. Ruang Seminar Driyarkara berada di Lantai 2 Auditorium Driyarkara, Kampus II.",
+                related: ["Kampus II", "Auditorium Driyarkara"]
+            },
+            {
+                term: "Ruang Seminar LPPM",
+                definition: "Ruang seminar yang dikelola oleh Lembaga Penelitian dan Pengabdian kepada Masyarakat (LPPM), digunakan untuk kegiatan terkait penelitian dan pengabdian masyarakat. Ruang ini berlokasi di Kampus II Universitas Sanata Dharma.",
+                related: ["LPPM", "Kampus II"]
+            },
+            {
+                term: "Ruang Kadarman",
+                definition: "Ruang Kadarman adalah ruang yang dinamai untuk menghormati Pater A.M. Kadarman, seorang tokoh pendidikan, manajemen, dan rohaniawan Katolik yang memberikan kontribusi besar bagi pengembangan pendidikan tinggi di Indonesia, khususnya di Universitas Sanata Dharma. Beliau pernah menjabat sebagai Wakil Dekan dan Ketua Jurusan Ekonomi P.T.P.G. Sanata Dharma Yogyakarta, serta kemudian menjadi Rektor IKIP Sanata Dharma. Ruang ini digunakan untuk kegiatan akademik, seminar, dan pertemuan, dan terletak di lantai IV Gedung BAA, Kampus II USD. Penamaan ruang ini mengenang jasa beliau dalam mendirikan lembaga pendidikan dan manajemen, membimbing pengembangan akademik, serta menginspirasi mahasiswa dan civitas akademika USD.",
+                related: ["BAA", "Manajemen", "Kampus II"]
+            },
+            {
+                term: "Sadhar",
+                definition: "Kependekan dari Sanata Dharma, digunakan sebagai julukan untuk menyebut Universitas Sanata Dharma secara singkat.",
+                related: ["Jesuit"]
+            },
+            {
+                term: "SASINDO",
+                definition: "Kependekan dari Program Studi Sastra Indonesia.",
+                related: ["Sastra Indonesia", "HMPSSASINDO"]
+            },
+            {
+                term: "SH",
+                definition: "Kependekan dari Student Hall yang terletak di Kampus I sebelah barat UBSD. SH adalah ruang terbuka serbaguna yang digunakan untuk berbagai kegiatan mahasiswa, seperti pertemuan organisasi, seminar, pameran, dan acara kampus lainnya.",
+                related: ["Kampus I", "UBSD"]
+            },
+            {
+                term: "SIA Kemahasiswaan",
+                definition: "Sistem Informasi Akademik kampus yang menampilkan data tentang mahasiswa. Alamat website: https://mahasiswa.usd.ac.id.",
+                related: ["SIA Orang Tua", "KRS"] 
+            },
+            {
+                term: "SIA Orang Tua",
+                definition: "Fasilitas dari Universitas Sanata Dharma bagi orang tua mahasiswa untuk melihat perkembangan akademik mahasiswa selama kuliah di USD secara real time. Dengan alamat website yaitu https://orangtua.usd.ac.id/orangtua/.",
+                related: ["SIA Kemahasiswaan"]
+            },
+            {
+                term: "Skripsi",
+                definition: "Karya tulis ilmiah yang menjadi tugas akhir mahasiswa untuk memperoleh gelar sarjana.",
+                related: ["Dospem", "KKLP", "Proposal"]
+            },
+            {
+                term: "Satuan Kredit Semester (SKS)",
+                definition: "Satuan beban studi yang menentukan jumlah mata kuliah serta bobotnya. Total SKS yang harus ditempuh untuk kelulusan umumnya sekitar 144 SKS, yang terdiri atas mata kuliah wajib dan mata kuliah pilihan. Dalam penyusunan Kartu Rencana Studi (KRS), jumlah SKS yang dapat diambil setiap semester biasanya dibatasi hingga maksimal 24 SKS.",
+                related: ["IPK", "KRS", "USKS"] 
+            },
+            {
+                term: "Sastra Indonesia",
+                definition: "Program studi yang mempelajari bahasa dan sastra Indonesia, mencakup analisis karya sastra (prosa, puisi, drama), sejarah sastra, teori dan kritik sastra, linguistik, serta kajian budaya. Lulusan prodi ini memperoleh gelar Sarjana Sastra (S.S.). Program Studi Sastra Indonesia terletak di Gedung Fakultas Sastra, Kampus I.",
+                related: ["PBSI", "Sastra Inggris", "Kampus I", "SASINDO", "Ruang Play"]
+            },
+            {
+                term: "Sastra Inggris",
+                definition: "Program studi yang mempelajari tentang pengetahuan dalam bahasa inggris, karya sastra, dan budaya lokal, nasional dari perspektif global. Lulusan Prodi Sastra Inggris akan mendapatkan gelar Sarjana Sastra (S.S.). Prodi ini terletak di Kampus I, di Gedung Fakultas Sastra.",
+                related: ["PBI", "Sastra Indonesia", "Kampus I", "Ruang Play"]
+            },
+            {
+                term: "Sejarah",
+                definition: "Program studi yang mempelajari segala peristiwa di masa lalu dalam berbagai konteks, mulai dari geografis, kesehatan, budaya, ekonomi, politik, seni, agama, hingga militer. Lulusan Prodi Sejarah akan mendapatkan gelar Sarjana Humaniora (S.Hum.). Prodi ini terletak di Kampus I, dI Gedung Fakultas Sastra.",
+                related: ["Pendidikan Sejarah", "Kampus I"]
+            },
+            {
+                term: "Student Staff",
+                definition: "Seorang mahasiswa Universitas Sanata Dharma yang memiliki peran sebagai staf pembantu dalam berbagai macam hal teknis.",
+                related: ["Tendik", "Asdos"]
+            },
+            {
+                term: "Taman Bringsu",
+                definition: "Singkatan dari Beringin Soekarno. keberadaan pohon beringin di taman ini dianggap memiliki cerita sejarah yang simbolis. Taman ini berlokasi di area S-2 atau lebih tepatnya di belakang Kantin Realino Kampus II.",
+                related: ["Kampus II", "Kantin Realino"]
+            },
+            {
+                term: "Tangcin",
+                definition: "Kependekan dari tangga cinderella yang berada di sebelah utara Lobi Kampus I. Tangcin adalah tangga yang memiliki desain atau cerita unik di kampus, mungkin dikenal karena arsitektur atau lokasinya yang khas. Tempat ini sering menjadi titik temu atau lokasi foto bagi mahasiswa.",
+                related: ["Kampus I", "Lorcin"]
+            },
+            {
+                term: "Tekdis",
+                definition: "Kependekan dari Teknologi Elektromedis. Tekdis merupakan prodi vokasi yang mempelajari tentang perawatan dan perbaikan peralatan medis, termasuk alat pencitraan medis seperti MRI, CT scan, dan X-ray. Gelar yang diberikan adalah S.Tr.T (Sarjana Terapan Teknik). Prodi ini terletak di kampus III.",
+                related: ["Teknik Elektro", "Vokasi", "Kampus III"]
+            },
+            {
+                term: "Teknik Elektro",
+                definition: "Program studi yang mempelajari listrik dan elektromagnetik, serta mendesain dan mengaplikasikan komponen maupun sistem yang memanfaatkan listrik (electricity), elektronika (electronics), dan elektromagnetisme (electromagnetism). Lulusan program studi ini akan memperoleh gelar Sarjana Teknik (S.T.). Program studi ini berlokasi di Kampus III.",
+                related: ["FST", "Teknik Mesin", "Kampus III", "Program Profesi Insinyur (PPI)"]
+            },
+            {
+                term: "Teknik Mesin",
+                definition: "Program studi yang mempelajari prinsip-prinsip dasar fisika untuk menganalisis, merancang, dan memelihara sistem mekanik. Lulusan program studi ini akan memperoleh gelar Sarjana Teknik (S.T.). Program studi berlokasi di Kampus III.",
+                related: ["FST", "Teknik Elektro", "Kampus III", "Program Profesi Insinyur (PPI)"]
+            },
+            {
+                term: "Tendik",
+                definition: "Kependekan dari Tenaga Kependidikan. Tendik adalah tenaga penunjang penyelenggaraan pendidikan dalam melaksanakan administrasi, pengelolaan, dan pelayanan teknis.",
+                related: ["Dospem", "Student Staff", "APL"]
+            },
+            {
+                term: "TSD",
+                definition: "Kependekan dari Teater Seriboe Djendela. TSD merupakan Unit Kegiatan Mahasiswa yang berfokus pada kegiatan akting dan teater. Organisasi ini berlokasi di Gedung UKM, Kampus II.",
+                related: ["Unit Kegiatan Mahasiswa (UKM)", "Panggung Realino", "Kampus II"]
+            },
+            {
+                term: "UBSD",
+                definition: "Kependekan dari Unit Bersama Sanata Dharma terletak di Kampus I. Unit ini berfungsi sebagai pusat layanan bersama di Universitas Sanata Dharma, menyediakan berbagai layanan dan fasilitas bagi mahasiswa dan staf, termasuk kantin atau tempat makan.",
+                related: ["Kampus I", "SH", "Kantin Realino", "Ruang SAC"]
+            },
+            {
+                term: "UGM",
+                definition: "Kependekan dari Universitas Gang Mrican, yaitu julukan untuk Kampus I dan II Universitas Sanata Dharma (USD) yang terletak di Jalan Mrican, berdekatan dengan Universitas Gadjah Mada. Julukan UGM juga digunakan untuk Kampus III Paingan, dikenal sebagai Universitas Gang Maguwo karena lokasinya yang sangat dekat dengan Stadion Maguwoharjo.",
+                related: ["Kampus I", "Kampus II", "Kampus III"]
+            },
+            {
+                term: "UKF",
+                definition: "Kependekan dari Unit Kegiatan Fakultas, yaitu organisasi kemahasiswaan formal yang berada di bawah fakultas dan menyelenggarakan kegiatan ekstrakurikuler. Kegiatan tersebut meliputi wacana penalaran, keilmuan, bakat, pengabdian masyarakat, dan minat mahasiswa. Contoh UKF antara lain BATAKO, SONIC, PSFE, KOTAFE, BECEK, PSYNEMA, dan Teksapala FST.",
+                related: ["Unit Kegiatan Mahasiswa (UKM)", "HMJ"]
+            },
+            {
+                term: "UKPS",
+                definition: "Kependekan dari Unit Kegiatan Prodi Studi. UKPS adalah organisasi kemahasiswaan formal yang menyelenggarakan kegiatan ekstrakurikuler meliputi wacana penalaran, keilmuan, bakat, pengabdian masyarakat, dan minat yang berkedudukan di program studi.",
+                related: ["Unit Kegiatan Mahasiswa (UKM)", "HMJ"]
+            },
+            {
+                term: "Unit Kegiatan Mahasiswa (UKM)",
+                definition: "Organisasi mahasiswa di tingkat universitas yang menjadi wadah pengembangan minat, bakat, dan kreativitas.",
+                related: ["UKF", "JKMK", "TSD", "Poin Kemahasiswaan", "Pengabdian Masyarakat"]
+            },
+            {
+                term: "Undip",
+                definition: "Kependekan dari Universitas di Paingan, yaitu julukan plesetan untuk Kampus III Universitas Sanata Dharma yang terletak di daerah Paingan.",
+                related: ["Kampus III"]
+            },
+            {
+                term: "USKS",
+                definition: "Kependekan dari Uang Satuan Kredit Semester, yaitu biaya yang dibayarkan setiap pertengahan semester. Besaran USKS dihitung berdasarkan jumlah SKS (Satuan Kredit Semester) yang diambil dikalikan dengan tarif per SKS.",
+                related: ["SKS", "DPP"]
+            },
+            {
+                term: "Visitor Center",
+                definition: "Ruang informasi dan layanan yang disediakan bagi tamu universitas, berlokasi di area utama Kampus I Mrican.",
+                related: ["Kampus I"]
+            },
+            {
+                term: "Vokasi",
+                definition: "Jenjang pendidikan tinggi yang menekankan pengembangan keterampilan praktis dan keahlian khusus untuk memenuhi kebutuhan dunia kerja.",
+                related: ["Tekdis"]
+            },
+            {
+                term: "Website USD",
+                definition: "Situs resmi Universitas Sanata Dharma (USD) yang berfungsi sebagai platform informasi dan layanan online bagi mahasiswa, dosen, staf, calon mahasiswa, dan masyarakat umum, menyediakan informasi mengenai profil universitas, program studi, penerimaan mahasiswa baru, berita, pengumuman, serta fasilitas dan layanan universitas. Website ini dapat diakses di https://www.usd.ac.id.",
+                related: ["BELAJAR USD", "SIA Kemahasiswaan"]
+            },
+            {
+                term: "Warek I/WR I",
+                definition: "Kependekan dari Wakil Rektor I. Warek I adalah pejabat universitas yang bertanggung jawab atas bidang akademik, termasuk pengembangan kurikulum, peningkatan kualitas pendidikan, dan penelitian. Wakil Rektor I Universitas Sanata Dharma saat ini adalah Bapak Prof. Ir. Sudi Mungkasi, Ph.D. untuk periode 2022–2026.",
+                related: ["Rektor", "WD I"]
+            },
+            {
+                term: "Warek II/WR II",
+                definition: "Kependekan dari Wakil Rektor II. Warek II adalah pejabat universitas yang mengurus bidang keuangan dan administrasi, termasuk pengelolaan anggaran, sumber daya manusia, dan fasilitas universitas. Wakil Rektor II Universitas Sanata Dharma periode 2022–2026 adalah Bapak Dr. Yohanes Harsoyo, M.Si.",
+                related: ["Rektor", "WD II"]
+            },
+            {
+                term: "Warek III/WR III",
+                definition: "Kependekan dari Wakil Rektor III, yaitu pejabat universitas yang mengurusi bidang kemahasiswaan dan alumni, termasuk kegiatan ekstrakurikuler, layanan mahasiswa, dan hubungan dengan alumni. Wakil Rektor III Universitas Sanata Dharma periode 2022–2026 adalah Ibu Dr. Titik Kristiyani, M.Psi.",
+                related: ["Rektor", "Unit Kegiatan Mahasiswa (UKM)", "Poin Kemahasiswaan"]
+            },
+            {
+                term: "Warek IV/ WR IV",
+                definition: "Kependekan dari Wakil Rektor IV, yaitu pejabat universitas yang bertanggung jawab atas bidang kerja sama dan pengembangan institusi, termasuk kemitraan eksternal dan pengembangan program strategis. Wakil Rektor IV Universitas Sanata Dharma periode 2022–2026 adalah Ibu Caecilia Tutyandari, Ph.D.",
+                related: ["Rektor", "BKHI"]
+            },
+            {
+                term: "WD I",
+                definition: "Kependekan dari Wakil Dekan I. WD I adalah pemimpin di fakultas dalam perguruan tinggi yang bertugas membantu Dekan dalam bidang akademik.",
+                related: ["WD II", "Warek I/WR I"]
+            },
+            {
+                term: "Wakaprodi/Waka",
+                definition: "Kependekan dari Wakil Ketua Program Studi, yaitu pejabat di perguruan tinggi yang membantu tugas dan tanggung jawab Ketua Program Studi (Kaprodi).",
+                related: ["Kaprodi"]
+            },
+            {
+                term: "WD II",
+                definition: "Kependekan dari Wakil Dekan II. WD II adalah pemimpin di fakultas dalam perguruan tinggi yang bertugas membantu dekan dalam bidang keuangan.",
+                related: ["WD I", "Warek II/WR II"]
+            },
+            {
+                term: "Yokuwi",
+                definition: "Tempat makan populer di kalangan mahasiswa, dikenal dengan harga terjangkau dan cita rasa lezat. Yokuwi berlokasi di Jl. Kepuhsari No. 23, Depok, Yogyakarta (seberang Universitas Sanata Dharma Kampus III).",
+                related: ["Kampus III", "Kantin Realino"]
+            },
+            {
+                term: "Journal of Language and Literature (JOLL)",
+                definition: "Nama jurnal ilmiah milik Program Studi Sastra Inggris Universitas Sanata Dharma yang memuat artikel penelitian dan artikel konseptual di bidang linguistik, sastra, penerjemahan, dan kajian budaya. Jurnal ini bersifat akses terbuka dan diterbitkan dua kali setahun, yaitu pada bulan April dan Oktober.",
+                related: ["Sastra Inggris"]
+            },
+            {
+                term: "Jurnal Farmasi Sains dan Komunitas (Journal of Pharmaceutical Sciences and Community)",
+                definition: "Nama jurnal ilmiah peer-reviewed dan open access yang mempublikasikan artikel penelitian, tinjauan, dan komunikasi singkat di berbagai bidang farmasi seperti Teknologi Farmasi, Analisis Farmasi, Kimia Medik, Farmakologi dan Toksikologi, Biologi Farmasi, Farmasi Komunitas, dan Farmasi Klinik. Jurnal in dikelola dan diterbitkan oleh Fakultas Farmasi, Universitas Sanata Dharma, Yogyakarta. Jurnal ini terbit dua kali dalam setahun, yakni pada bulan Mei dan November.",
+                related: ["Farmasi"]
+            },
+            {
+                term: "Jurnal Orientasi Baru",
+                definition: "Nama jurnal ilmiah yang memuat pemikiran-pemikiran kritis dalam bidang filsafat, teologi, dan ilmu-ilmu terkait, bertujuan memberikan inspirasi dan arah baru bagi kehidupan Gereja dan masyarakat Indonesia. Jurnal ini dimiliki dan diterbitkan oleh Pusat Penelitian Teologi Kontekstual, Fakultas Teologi Universitas Sanata Dharma (USD). Jurnal Orientasi Baru terbit dua kali setahun, yaitu pada bulan April dan Oktober.",
+                related: ["Filsafat Keilahian"]
+            }
+        ];
+
+        const searchInput = document.getElementById('searchInput');
+        const resultsArea = document.getElementById('resultsArea');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+
+        // Fungsi utama untuk menangani input pencarian dan menampilkan hasil
+        function handleSearch() {
+            const query = searchInput.value.toLowerCase().trim();
+            resultsArea.innerHTML = ''; // Bersihkan hasil lama
+
+            // 1. Tampilkan pesan selamat datang jika kolom pencarian kosong
+            if (query.length === 0) {
+                welcomeMessage.classList.remove('hidden');
+                resultsArea.appendChild(welcomeMessage);
+                return;
+            }
+
+            welcomeMessage.classList.add('hidden');
+
+            // 2. Logika pencarian: Hanya tampilkan istilah yang dimulai dengan teks yang diketik (startswith)
+            const filteredResults = dictionaryData.filter(item =>
+                item.term.toLowerCase().startsWith(query)
+            );
+
+            renderResults(filteredResults);
+        }
+
+        // Fungsi untuk me-render hasil pencarian
+        function renderResults(results) {
+            resultsArea.innerHTML = ''; // Bersihkan hasil lama
+
+            // 3. Tampilkan pesan "Tidak Ditemukan" jika hasil kosong
+            if (results.length === 0) {
+                resultsArea.innerHTML = `
+                    <div class="text-center p-10 bg-pink-light rounded-xl shadow-lg">
+                        <p class="text-2xl font-bold text-gray-500 mb-2">Tidak Ditemukan</p>
+                        <p class="text-gray-600">Maaf, tidak ada istilah yang dimulai dengan "${searchInput.value}" dalam kamus saat ini.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // 4. Render setiap kartu definisi
+            results.forEach(item => {
+                // Saring istilah terkait yang benar-benar ada di dictionaryData
+                const relatedPills = item.related.map(relatedTerm => {
+                    const exists = dictionaryData.some(d => d.term === relatedTerm);
+                    return exists ? `
+                        <button class="pill-button px-4 py-1 text-sm font-medium rounded-full 
+                                       bg-rose-soft/70 text-maroon-deep shadow-sm 
+                                       hover:bg-rose-soft transition duration-200" 
+                                onclick="setSearch('${relatedTerm}')">
+                            ${relatedTerm}
+                        </button>
+                    ` : '';
+                }).join('');
+                
+                // Tentukan apakah bagian "Istilah Terkait" perlu ditampilkan
+                const hasRelatedPills = relatedPills.trim().length > 0;
+                const relatedSection = hasRelatedPills ? `
+                    <div class="pt-4">
+                        <h3 class="text-md font-bold text-maroon-accent-light mb-3">Istilah Terkait:</h3>
+                        <div class="flex flex-wrap gap-2">
+                            ${relatedPills}
+                        </div>
+                    </div>
+                ` : '';
+
+
+                // Kartu Definisi Istilah
+                const cardHtml = `
+                    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-xl shadow-gray-200/50 hover:shadow-2xl transition duration-300 border border-gray-100">
+                        <h2 class="text-3xl font-extrabold text-maroon-deep mb-4 border-b-2 border-rose-soft pb-2">
+                            ${item.term}
+                        </h2>
+                        <p class="text-lg leading-relaxed text-gray-700 mb-6">
+                            ${item.definition}
+                        </p>
+                        ${relatedSection}
+                    </div>
+                `;
+                resultsArea.innerHTML += cardHtml;
+            });
+        }
+
+        // Fungsi untuk mengisi kolom pencarian dan memicu pencarian ulang dari tombol "Istilah Terkait"
+        function setSearch(term) {
+            searchInput.value = term;
+            handleSearch(); // Memicu pencarian dengan istilah baru
+            searchInput.focus();
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Gulir ke atas untuk melihat hasil
+        }
+
+        // Tampilkan pesan selamat datang saat pertama kali dimuat (atau jika ada teks yang tersisa)
+        document.addEventListener('DOMContentLoaded', () => {
+            handleSearch(); 
+        });
+    </script>
+</body>
+</html>
